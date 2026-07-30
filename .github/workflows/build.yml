@@ -26,6 +26,7 @@ jobs:
 
     - name: Build module
       run: |
+        chmod +x ./gradlew
         sed -i "s/GamePackageName/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
         ./gradlew :module:assembleRelease
 
