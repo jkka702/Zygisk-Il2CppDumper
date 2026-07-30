@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Game package name'
+        required: true
+        default: 'com.example.game'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Build module
+      run: |
+        sed -i "s/GamePackageName/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
+        ./gradlew :module:assembleRelease
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: zygisk-il2cppdumper
+        path: out/*.zip
